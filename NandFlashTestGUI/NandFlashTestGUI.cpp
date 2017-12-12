@@ -14,24 +14,31 @@ const double vHeightFac = 0.81;
 
 NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	: QMainWindow(parent), viewer(new FlashViewer(this)),
-	infoEdit(new QTextEdit(this))
+	infoEdit(new QTextEdit(this)), genWindow(new GeneralMenu(this))
 {
 	ui.setupUi(this);
 	this->size().setWidth(STD_WIDTH);
 	this->size().setHeight(STD_HEIGHT);
 	this->setMinimumSize(STD_WIDTH, STD_HEIGHT);
-	this->flashViewW = this->size().width() * vWidthFac;
 
 	// set the flash viewer
-	viewer->setGeometry(STD_WIDTH- flashViewW, MENU_HEIGHT,
-		viewer->getMinWidth(), viewer->getMinHeight());
+	viewer->setGeometry(STD_WIDTH * (1 - vWidthFac), MENU_HEIGHT, 
+						viewer->getMinWidth(), viewer->getMinHeight());
 	viewer->show();
 
 	// set the infomation text editor
-	infoEdit->setGeometry(STD_WIDTH - flashViewW, size().height() * vHeightFac + 1,
-		flashViewW - 4, STD_HEIGHT - viewer->getMinHeight() - MENU_HEIGHT - 2);
+	infoEdit->setGeometry(STD_WIDTH * (1 - vWidthFac), 
+						  size().height() * vHeightFac + 1,
+						  STD_WIDTH- 4, 
+						  STD_HEIGHT - viewer->getMinHeight() - MENU_HEIGHT - 2);
 	infoEdit->setReadOnly(true);
 	infoEdit->show();
+
+	// set the general menu window
+	genWindow->setGeometry(0, MENU_HEIGHT,
+						   size().width() * (1 - vWidthFac), 
+						   size().height() - MENU_HEIGHT);
+	genWindow->show();
 }
 
 // draw a red line to draw a border line
@@ -39,15 +46,34 @@ void NandFlashTestGUI::paintEvent(QPaintEvent * ev)
 {
 	QPainter painter(this);
 	painter.setPen(QColor{ 255, 0, 0 });
-	painter.drawRect(this->size().width() - flashViewW, MENU_HEIGHT,
-		flashViewW - 5, size().height() * vHeightFac);
+	painter.drawRect(size().width() * (1 - vWidthFac), MENU_HEIGHT,
+					 size().width() * vWidthFac - 5, size().height() * vHeightFac);
 }
 
 void NandFlashTestGUI::resizeEvent(QResizeEvent * ev)
 {
-	this->flashViewW = this->size().width() * vWidthFac;
-	viewer->setGeometry(this->size().width()- flashViewW, MENU_HEIGHT,
-		viewer->getMinWidth(), viewer->getMinHeight());
-	infoEdit->setGeometry(size().width() - flashViewW, size().height() * vHeightFac + 2,
-		flashViewW - 4, size().height() * (1 - vHeightFac) - 1);
+	// reset the main window with the fixed factor
+	viewer->setGeometry(this->size().width() * (1 - vWidthFac), MENU_HEIGHT,
+						viewer->getMinWidth(), viewer->getMinHeight());
+	infoEdit->setGeometry(size().width() * (1 - vWidthFac), 
+						  size().height() * vHeightFac + 2,
+						  size().width() * vWidthFac - 4, 
+						  size().height() * (1 - vHeightFac) - 1);
+	genWindow->setGeometry(0, MENU_HEIGHT,
+						   size().width() * (1 - vWidthFac), 
+						   size().height() - MENU_HEIGHT);
+}
+
+void NandFlashTestGUI::wheelEvent(QWheelEvent * ev)
+{
+	// when in where red line round
+	if (ev->pos().x() > size().width() * (1 - vWidthFac)
+		&& ev->pos().x() < size().width() - 5
+		&& ev->pos().y() > MENU_HEIGHT
+		&& ev->pos().y() < size().height() * vHeightFac)
+	{
+		if(ev->delta() > 0)
+			viewer->wheelViewerUp();
+		else viewer->wheelViewerDown();
+	}
 }

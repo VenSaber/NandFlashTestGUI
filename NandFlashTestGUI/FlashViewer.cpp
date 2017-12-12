@@ -9,8 +9,7 @@
 
 const int spacew = 10;
 const int spaceh = 10;
-const int sublen = 2;
-
+static int sublen = 2;
 
 FlashViewer::FlashViewer(QWidget* parent)
 	:QWidget(parent),
@@ -47,11 +46,17 @@ void FlashViewer::paintEvent(QPaintEvent * ev)
 		}
 }
 
-void FlashViewer::wheelEvent(QWheelEvent* ev)
+void FlashViewer::wheelViewerUp()
 {
-	//auto delta = ev->delta();
-	//this->scale(delta, delta);
-	// get the point that the mouce point
-	QPoint& pt = ev->pos();
-	qDebug() << "(" << pt.x() << ", " << pt.y() << ")\n";
+	sublen++;
+	this->repaint();
+}
+
+void FlashViewer::wheelViewerDown()
+{
+	if (sublen > 2)
+	{ 
+		sublen--;
+		this->repaint();
+	}
 }

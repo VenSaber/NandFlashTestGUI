@@ -11,6 +11,7 @@ class NandFlashTestGUI : public QMainWindow
 	Q_OBJECT
 public:
 	NandFlashTestGUI(QWidget *parent = Q_NULLPTR);
+	~NandFlashTestGUI() = default;
 	void paintEvent(QPaintEvent* ev) override;
 	void resizeEvent(QResizeEvent* ev) override;
 	void wheelEvent(QWheelEvent* ev) override;

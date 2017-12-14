@@ -8,7 +8,7 @@ class GeneralMenu : public QWidget
 
 public:
 	GeneralMenu(QWidget *parent);
-	~GeneralMenu();
+	~GeneralMenu() = default;
 private:
 	Ui::GeneralMenuClass ui;
 };

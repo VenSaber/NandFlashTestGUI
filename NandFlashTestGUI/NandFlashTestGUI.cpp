@@ -1,12 +1,14 @@
 #include "NandFlashTestGUI.h"
 #include "qevent.h"
+#include "qkeyeventtransition.h"
 #include "qpainter.h"
 #include "qbrush.h"
 #include "qdebug.h"
 
-#define STD_WIDTH	1280
-#define STD_HEIGHT	720
-#define MENU_HEIGHT 40
+#define		STD_WIDTH		1280
+#define		STD_HEIGHT		720
+#define		MENU_HEIGHT		40
+#define		REMAIN_SPACE	5
 
 // Fac means factor
 const double vWidthFac = 0.88;
@@ -29,8 +31,8 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	// set the infomation text editor
 	infoEdit->setGeometry(STD_WIDTH * (1 - vWidthFac), 
 						  size().height() * vHeightFac + 1,
-						  STD_WIDTH- 4, 
-						  STD_HEIGHT - viewer->getMinHeight() - MENU_HEIGHT - 2);
+						  STD_WIDTH * vWidthFac - REMAIN_SPACE + 1, 
+						  STD_HEIGHT * vHeightFac - 2);
 	infoEdit->setReadOnly(true);
 	infoEdit->show();
 
@@ -38,6 +40,7 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	genWindow->setGeometry(0, MENU_HEIGHT,
 						   size().width() * (1 - vWidthFac), 
 						   size().height() - MENU_HEIGHT);
+	genWindow->raise();
 	genWindow->show();
 }
 
@@ -47,17 +50,21 @@ void NandFlashTestGUI::paintEvent(QPaintEvent * ev)
 	QPainter painter(this);
 	painter.setPen(QColor{ 255, 0, 0 });
 	painter.drawRect(size().width() * (1 - vWidthFac), MENU_HEIGHT,
-					 size().width() * vWidthFac - 5, size().height() * vHeightFac);
+					 size().width() * vWidthFac - REMAIN_SPACE, 
+					 size().height() * vHeightFac);
 }
 
+// when the main window size changed, the proportion would not change
 void NandFlashTestGUI::resizeEvent(QResizeEvent * ev)
 {
 	// reset the main window with the fixed factor
-	viewer->setGeometry(this->size().width() * (1 - vWidthFac), MENU_HEIGHT,
-						viewer->getMinWidth(), viewer->getMinHeight());
+	viewer->setGeometry(size().width() * (1 - vWidthFac), 
+						MENU_HEIGHT,
+						size().width() * vWidthFac - REMAIN_SPACE, 
+						size().height() * vHeightFac);
 	infoEdit->setGeometry(size().width() * (1 - vWidthFac), 
 						  size().height() * vHeightFac + 2,
-						  size().width() * vWidthFac - 4, 
+						  size().width() * vWidthFac - REMAIN_SPACE + 1, 
 						  size().height() * (1 - vHeightFac) - 1);
 	genWindow->setGeometry(0, MENU_HEIGHT,
 						   size().width() * (1 - vWidthFac), 
@@ -66,14 +73,18 @@ void NandFlashTestGUI::resizeEvent(QResizeEvent * ev)
 
 void NandFlashTestGUI::wheelEvent(QWheelEvent * ev)
 {
-	// when in where red line round
-	if (ev->pos().x() > size().width() * (1 - vWidthFac)
-		&& ev->pos().x() < size().width() - 5
-		&& ev->pos().y() > MENU_HEIGHT
-		&& ev->pos().y() < size().height() * vHeightFac)
+	// control key plus wheel to zoom in and zoom out
+	if (ev->modifiers() == Qt::ControlModifier)
 	{
-		if(ev->delta() > 0)
-			viewer->wheelViewerUp();
-		else viewer->wheelViewerDown();
+		// when in where red line round
+		if (ev->pos().x() > size().width() * (1 - vWidthFac)
+			&& ev->pos().x() < size().width() - REMAIN_SPACE
+			&& ev->pos().y() > MENU_HEIGHT
+			&& ev->pos().y() < size().height() * vHeightFac)
+		{
+			if (ev->delta() > 0)
+				viewer->wheelViewerUp();
+			else viewer->wheelViewerDown();
+		}
 	}
 }

@@ -23,9 +23,17 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	this->size().setHeight(STD_HEIGHT);
 	this->setMinimumSize(STD_WIDTH, STD_HEIGHT);
 
+	// set the general menu window
+	genWindow->setGeometry(0, MENU_HEIGHT,
+						   size().width() * (1 - vWidthFac), 
+						   size().height() - MENU_HEIGHT);
+	genWindow->raise();
+	genWindow->show();
+
 	// set the flash viewer
 	viewer->setGeometry(STD_WIDTH * (1 - vWidthFac), MENU_HEIGHT, 
 						viewer->getMinWidth(), viewer->getMinHeight());
+	viewer->setController(genWindow);
 	viewer->show();
 
 	// set the infomation text editor
@@ -36,12 +44,7 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	infoEdit->setReadOnly(true);
 	infoEdit->show();
 
-	// set the general menu window
-	genWindow->setGeometry(0, MENU_HEIGHT,
-						   size().width() * (1 - vWidthFac), 
-						   size().height() - MENU_HEIGHT);
-	genWindow->raise();
-	genWindow->show();
+
 }
 
 // draw a red line to draw a border line

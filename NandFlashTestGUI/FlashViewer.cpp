@@ -8,12 +8,17 @@ const int spacew = 10;
 const int spaceh = 10;
 static int sublen = 2;
 
-Flash FlashViewer::currentFlash = { "Default", 2048, 64, 2, 8 };
+Flash FlashViewer::currentFlash{"default", 2048, 64, 2, 8};
 
 FlashViewer::FlashViewer(QWidget* parent) :QWidget(parent),
 	minWidth(spacew * (currentFlash.colNum + 1) + sublen * currentFlash.ppb * currentFlash.colNum),
 	minHeight(spaceh * (currentFlash.rowNum + 1) + sublen * currentFlash.blkCnt / currentFlash.colNum)
 {
+	connect(controller, &GeneralMenu::FlashTypeChanged, [this](Flash& flash) {
+		//currentFlash = flash;
+		//this->repaint();
+		qDebug() << "flash type changed";
+	});
 }
 
 void FlashViewer::paintEvent(QPaintEvent * ev)

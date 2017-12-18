@@ -16,7 +16,7 @@
      <x>0</x>
      <y>0</y>
      <width>151</width>
-     <height>211</height>
+     <height>221</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
@@ -56,9 +56,28 @@
         <height>192</height>
        </size>
       </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOn</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      </property>
       <property name="showGrid">
        <bool>true</bool>
       </property>
+      <column>
+       <property name="text">
+        <string>C</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Type</string>
+       </property>
+      </column>
      </widget>
     </item>
     <item row="3" column="0">
@@ -88,6 +107,10 @@
      </widget>
     </item>
    </layout>
+   <zorder>flashTabeWidget</zorder>
+   <zorder>flashTableLabel</zorder>
+   <zorder>addButton</zorder>
+   <zorder>deleteButton</zorder>
   </widget>
  </widget>
  <resources/>

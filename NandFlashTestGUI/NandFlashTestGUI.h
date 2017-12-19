@@ -15,12 +15,11 @@ public:
 protected:
 	void paintEvent(QPaintEvent* ev) override;
 	void resizeEvent(QResizeEvent* ev) override;
-	void wheelEvent(QWheelEvent* ev) override;
 private:
 	// Containers
 	Ui::NandFlashTestGUIClass ui;
-	FlashViewer* viewer = nullptr;
 	GeneralMenu* genWindow = nullptr;
+	FlashViewer* viewer = nullptr;
 	QTextEdit* infoEdit = nullptr;
 };
 

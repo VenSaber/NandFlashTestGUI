@@ -15,8 +15,8 @@ const double vWidthFac = 0.88;
 const double vHeightFac = 0.81;
 
 NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
-	: QMainWindow(parent), viewer(new FlashViewer(this)),
-	infoEdit(new QTextEdit(this)), genWindow(new GeneralMenu(this))
+	: QMainWindow(parent), genWindow(new GeneralMenu(this)),
+	viewer(new FlashViewer(this, genWindow)), infoEdit(new QTextEdit(this)) 
 {
 	ui.setupUi(this);
 	this->size().setWidth(STD_WIDTH);
@@ -33,7 +33,7 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	// set the flash viewer
 	viewer->setGeometry(STD_WIDTH * (1 - vWidthFac), MENU_HEIGHT, 
 						viewer->getMinWidth(), viewer->getMinHeight());
-	viewer->setController(genWindow);
+	viewer->raise();
 	viewer->show();
 
 	// set the infomation text editor
@@ -43,8 +43,6 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 						  STD_HEIGHT * vHeightFac - 2);
 	infoEdit->setReadOnly(true);
 	infoEdit->show();
-
-
 }
 
 // draw a red line to draw a border line
@@ -72,22 +70,4 @@ void NandFlashTestGUI::resizeEvent(QResizeEvent * ev)
 	genWindow->setGeometry(0, MENU_HEIGHT,
 						   size().width() * (1 - vWidthFac), 
 						   size().height() - MENU_HEIGHT);
-}
-
-void NandFlashTestGUI::wheelEvent(QWheelEvent * ev)
-{
-	// control key plus wheel to zoom in and zoom out
-	if (ev->modifiers() == Qt::ControlModifier)
-	{
-		// when in where red line round
-		if (ev->pos().x() > size().width() * (1 - vWidthFac)
-			&& ev->pos().x() < size().width() - REMAIN_SPACE
-			&& ev->pos().y() > MENU_HEIGHT
-			&& ev->pos().y() < size().height() * vHeightFac)
-		{
-			if (ev->delta() > 0)
-				viewer->wheelViewerUp();
-			else viewer->wheelViewerDown();
-		}
-	}
 }

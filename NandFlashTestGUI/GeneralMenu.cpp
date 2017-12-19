@@ -1,3 +1,4 @@
+// TODO:SEARCH FLASH TYPE
 #include "GeneralMenu.h"
 #include "FlashViewer.h"
 #include "AddWidget.h"
@@ -47,7 +48,6 @@ void GeneralMenu::FlashTableInit()
 					 this, &GeneralMenu::DoubleClickProcess);
 }
 
-// TODO:DEBUG
 void GeneralMenu::DoubleClickProcess()
 {
 	auto oldItem = ui.flashTabeWidget->takeItem(selectRow, 0);
@@ -85,8 +85,19 @@ void GeneralMenu::DeleteProcess()
 		box->exec();
 		return ;
 	}
+	// delete the specified item
 	auto& db = DataBaseProcess::OpenDataBase();
 	QSqlQuery query(DataBaseProcess::DeleteFlashByName(name));
+	DataBaseProcess::CloseDataBase(db);
+
+	// if deleted item is selected, the item would become default
+	const QString& flag = ui.flashTabeWidget->item(currentRow, 0)->text();
+	if (flag == "O")
+	{
+		ui.flashTabeWidget->takeItem(currentRow, 0);
+		ui.flashTabeWidget->setItem(0, 0, selectSign);
+		Flash flash{ "default", 2048, 64, 2, 8 };
+		emit FlashTypeChanged(flash);
+	}
 	ui.flashTabeWidget->removeRow(currentRow);
-	// TODO: if deleted item is selected, the item would become default
 }

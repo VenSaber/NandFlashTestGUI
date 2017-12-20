@@ -1,4 +1,5 @@
-// TODO:SEARCH FLASH TYPE
+// TODO: SEARCH FLASH TYPE
+// TODO: MAKE THIS WIDGET CHANGE SIZE WITH THE MAIN WINDOW RESIZE
 #include "GeneralMenu.h"
 #include "FlashViewer.h"
 #include "AddWidget.h"

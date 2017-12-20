@@ -31,16 +31,17 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	genWindow->show();
 
 	// set the flash viewer
-	viewer->setGeometry(STD_WIDTH * (1 - vWidthFac), MENU_HEIGHT, 
-						viewer->getMinWidth(), viewer->getMinHeight());
+	viewer->setGeometry(STD_WIDTH * (1 - vWidthFac), MENU_HEIGHT,
+						STD_WIDTH * vWidthFac - REMAIN_SPACE,
+						STD_HEIGHT * vHeightFac - MENU_HEIGHT);
 	viewer->raise();
 	viewer->show();
 
 	// set the infomation text editor
 	infoEdit->setGeometry(STD_WIDTH * (1 - vWidthFac), 
-						  size().height() * vHeightFac + 1,
+						  STD_HEIGHT * vHeightFac + 1,
 						  STD_WIDTH * vWidthFac - REMAIN_SPACE + 1, 
-						  STD_HEIGHT * vHeightFac - 2);
+						  STD_HEIGHT * (1 - vHeightFac)- 2);
 	infoEdit->setReadOnly(true);
 	infoEdit->show();
 }
@@ -59,10 +60,9 @@ void NandFlashTestGUI::paintEvent(QPaintEvent * ev)
 void NandFlashTestGUI::resizeEvent(QResizeEvent * ev)
 {
 	// reset the main window with the fixed factor
-	viewer->setGeometry(size().width() * (1 - vWidthFac), 
-						MENU_HEIGHT,
+	viewer->setGeometry(size().width() * (1 - vWidthFac), MENU_HEIGHT,
 						size().width() * vWidthFac - REMAIN_SPACE, 
-						size().height() * vHeightFac);
+						size().height() * vHeightFac - MENU_HEIGHT);
 	infoEdit->setGeometry(size().width() * (1 - vWidthFac), 
 						  size().height() * vHeightFac + 2,
 						  size().width() * vWidthFac - REMAIN_SPACE + 1, 

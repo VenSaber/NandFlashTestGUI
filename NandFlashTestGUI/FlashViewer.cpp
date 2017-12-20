@@ -1,3 +1,6 @@
+// TODO: ARBITRARY ANCHOR ZOOMIN AND ZOOMOUT
+// TODO: RIGHT BUTTON CLICK, A MENU DIALOG
+// TODO: THE RESET MENU: reset the flash image to the default position
 #include "FlashViewer.h"
 #include <qlabel.h>
 #include <qpainter.h>
@@ -12,9 +15,7 @@ Flash FlashViewer::currentFlash{"default", 2048, 64, 2, 8};
 
 FlashViewer::FlashViewer(QWidget* parent, GeneralMenu* _controller)
 	:QWidget(parent), controller(_controller),
-	minWidth(spacew * (currentFlash.colNum + 1) + sublen * currentFlash.ppb * currentFlash.colNum),
-	minHeight(spaceh * (currentFlash.rowNum + 1) + sublen * currentFlash.blkCnt / currentFlash.colNum),
-	painterMoveX(0), painterMoveY(0), preMouseX(0), preMouseY(0)
+	painterMoveX(0), painterMoveY(0), preMouseX(0), preMouseY(0), midButtonClick(false)
 {
 	this->setMouseTracking(false);
 	connect(controller, &GeneralMenu::FlashTypeChanged, [this](Flash& flash) {
@@ -74,12 +75,32 @@ void FlashViewer::wheelEvent(QWheelEvent * ev)
 	}
 }
 
-// TODO: need a effective solution
 void FlashViewer::mouseMoveEvent(QMouseEvent * ev)
 {
-	painterMoveX = ev->pos().rx() - preMouseX;
-	painterMoveY = ev->pos().ry() - preMouseY;
-	this->repaint();
-	preMouseX = ev->pos().rx();
-	preMouseY = ev->pos().ry();
+	if (midButtonClick)
+	{
+		painterMoveX = ev->pos().x() - preMouseX;
+		painterMoveY = ev->pos().y() - preMouseY;
+		this->repaint();
+	}
+}
+
+void FlashViewer::mousePressEvent(QMouseEvent * ev)
+{
+	if (ev->button() == Qt::MidButton)
+	{
+		// be careful that the value of the painterMoveX 
+		// and painterMoveY should be always continuous
+		// so, we should minus painterMoveX and painterMoveY
+		// to calculate the preMouseX and preMouseY
+		preMouseX = ev->pos().x() - painterMoveX;
+		preMouseY = ev->pos().y() - painterMoveY;
+		midButtonClick = true;
+	}
+}
+
+void FlashViewer::mouseReleaseEvent(QMouseEvent * ev)
+{
+	if (ev->button() == Qt::MidButton)
+		midButtonClick = false;
 }

@@ -14,6 +14,7 @@ public:
 	~NandFlashTestGUI() = default;
 protected:
 	void paintEvent(QPaintEvent* ev) override;
+	void keyPressEvent(QKeyEvent* ev) override;
 	void resizeEvent(QResizeEvent* ev) override;
 private:
 	// Containers

@@ -1,5 +1,5 @@
-#include "NandFlashTestGUI.h"
 #include <QtWidgets/QApplication>
+#include "NandFlashTestGUI.h"
 
 int main(int argc, char *argv[])
 {

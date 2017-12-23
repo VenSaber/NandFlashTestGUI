@@ -1,7 +1,7 @@
-#include "AddWidget.h"
-#include "DataBaseProcess.h"
 #include <qsqlquery.h>
 #include <qdebug.h>
+#include "AddWidget.h"
+#include "DataBaseProcess.h"
 
 AddWidget::AddWidget(QWidget* parent)
 	: QWidget(parent)

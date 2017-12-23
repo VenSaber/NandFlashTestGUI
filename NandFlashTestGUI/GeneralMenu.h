@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include "FlashTypeTable.h"
 #include "ui_GeneralMenu.h"
 
 struct Flash
@@ -40,6 +41,8 @@ private:
 	void FlashTableInit();
 private:
 	Ui::GeneralMenuClass ui;
+
 	int selectRow; 
+	FlashTypeTable* flashTable;
 	QTableWidgetItem* selectSign;
 };

@@ -1,9 +1,9 @@
+#include <qevent.h>
+#include <qkeyeventtransition.h>
+#include <qpainter.h>
+#include <qbrush.h>
+#include <qdebug.h>
 #include "NandFlashTestGUI.h"
-#include "qevent.h"
-#include "qkeyeventtransition.h"
-#include "qpainter.h"
-#include "qbrush.h"
-#include "qdebug.h"
 
 #define		STD_WIDTH		1280
 #define		STD_HEIGHT		720
@@ -54,6 +54,11 @@ void NandFlashTestGUI::paintEvent(QPaintEvent * ev)
 	painter.drawRect(size().width() * (1 - vWidthFac), MENU_HEIGHT,
 					 size().width() * vWidthFac - REMAIN_SPACE, 
 					 size().height() * vHeightFac);
+}
+
+void NandFlashTestGUI::keyPressEvent(QKeyEvent * ev)
+{
+	viewer->keyPressEvent(ev);
 }
 
 // when the main window size changed, the proportion would not change

@@ -1,18 +1,20 @@
 // TODO: SEARCH FLASH TYPE
 // TODO: MAKE THIS WIDGET CHANGE SIZE WITH THE MAIN WINDOW RESIZE
-#include "GeneralMenu.h"
-#include "FlashViewer.h"
-#include "AddWidget.h"
-#include "DataBaseProcess.h"
 #include <qmessagebox.h>
 #include <qsqlquery.h>
 #include <qevent.h>
 #include <qdebug.h>
+#include "GeneralMenu.h"
+#include "FlashViewer.h"
+#include "AddWidget.h"
+#include "DataBaseProcess.h"
 
 #define SIGN_PGE 0.2
 
 GeneralMenu::GeneralMenu(QWidget *parent)
-	: QWidget(parent), selectRow(0), selectSign(new QTableWidgetItem("O"))
+	: QWidget(parent), selectRow(0), 
+	flashTable(new FlashTypeTable(this)),
+	selectSign(new QTableWidgetItem("O"))
 {
 	ui.setupUi(this);
 	FlashTableInit();
@@ -26,6 +28,12 @@ GeneralMenu::GeneralMenu(QWidget *parent)
 
 void GeneralMenu::FlashTableInit()
 {
+	flashTable->setGeometry(1, 34, 149, 131);
+	// set the 2 colomn, one is "c", another is "type"
+	flashTable->setColumnCount(2);
+	QStringList colHeadTitle{ "C", "Type" };
+	flashTable->setHorizontalHeaderLabels(colHeadTitle);
+
 	// output the flash type name to the table widget from database
 	auto& db = DataBaseProcess::OpenDataBase();
 	QSqlQuery query(DataBaseProcess::SelectFromFlashType("name"));
@@ -33,30 +41,30 @@ void GeneralMenu::FlashTableInit()
 	while (query.next())
 	{
 		QString name = query.value(0).toString();
-		ui.flashTabeWidget->insertRow(rowIndex);
+		flashTable->insertRow(rowIndex);
 		auto typeName = new QTableWidgetItem(name);
-		ui.flashTabeWidget->setItem(rowIndex++, 1, typeName);
+		flashTable->setItem(rowIndex++, 1, typeName);
 	}
 	DataBaseProcess::CloseDataBase(db);
 
 	// flash table widget setting
-	ui.flashTabeWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	ui.flashTabeWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-	ui.flashTabeWidget->setColumnWidth(0, ui.flashTabeWidget->width() * SIGN_PGE);
-	ui.flashTabeWidget->setItem(0, 0, selectSign);
+	flashTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	flashTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+	flashTable->setColumnWidth(0, flashTable->width() * SIGN_PGE);
+	flashTable->setItem(0, 0, selectSign);
 
-	QObject::connect(ui.flashTabeWidget, &QTableWidget::itemDoubleClicked,
+	QObject::connect(flashTable, &QTableWidget::itemDoubleClicked,
 					 this, &GeneralMenu::DoubleClickProcess);
 }
 
 void GeneralMenu::DoubleClickProcess()
 {
-	auto oldItem = ui.flashTabeWidget->takeItem(selectRow, 0);
-	selectRow = ui.flashTabeWidget->currentRow();
-	ui.flashTabeWidget->setItem(selectRow, 0, selectSign);
+	auto oldItem = flashTable->takeItem(selectRow, 0);
+	selectRow = flashTable->currentRow();
+	flashTable->setItem(selectRow, 0, selectSign);
 
 	auto& db = DataBaseProcess::OpenDataBase();
-	QString name = ui.flashTabeWidget->item(selectRow, 1)->text();
+	QString name = flashTable->item(selectRow, 1)->text();
 	QSqlQuery query(DataBaseProcess::SelectFlashByName(name));
 	query.next(); // watch out! this code must exit
 
@@ -70,15 +78,15 @@ void GeneralMenu::DoubleClickProcess()
 void GeneralMenu::AddNewLine(const QString & name)
 {
 	auto newItem = new QTableWidgetItem(name);
-	int row = ui.flashTabeWidget->rowCount();
-	ui.flashTabeWidget->setRowCount(row + 1);
-	ui.flashTabeWidget->setItem(row, 1, newItem);
+	int row = flashTable->rowCount();
+	flashTable->setRowCount(row + 1);
+	flashTable->setItem(row, 1, newItem);
 }
 
 void GeneralMenu::DeleteProcess()
 {
-	const int currentRow = ui.flashTabeWidget->currentRow();
-	const QString name = ui.flashTabeWidget->item(currentRow, 1)->text();
+	const int currentRow = flashTable->currentRow();
+	const QString name = flashTable->item(currentRow, 1)->text();
 	if (name == "default")
 	{
 		QMessageBox* box = new QMessageBox(QMessageBox::Warning,
@@ -92,13 +100,13 @@ void GeneralMenu::DeleteProcess()
 	DataBaseProcess::CloseDataBase(db);
 
 	// if deleted item is selected, the item would become default
-	const QString& flag = ui.flashTabeWidget->item(currentRow, 0)->text();
+	const QString& flag = flashTable->item(currentRow, 0)->text();
 	if (flag == "O")
 	{
-		ui.flashTabeWidget->takeItem(currentRow, 0);
-		ui.flashTabeWidget->setItem(0, 0, selectSign);
+		flashTable->takeItem(currentRow, 0);
+		flashTable->setItem(0, 0, selectSign);
 		Flash flash{ "default", 2048, 64, 2, 8 };
 		emit FlashTypeChanged(flash);
 	}
-	ui.flashTabeWidget->removeRow(currentRow);
+	flashTable->removeRow(currentRow);
 }

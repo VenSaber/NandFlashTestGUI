@@ -1,6 +1,6 @@
-#include "DataBaseProcess.h"
 #include <qvector.h>
 #include <qsqlquery.h>
+#include "DataBaseProcess.h"
 
 namespace DataBaseProcess
 {

@@ -1,3 +1,8 @@
+/**
+ * @file		main.cpp
+ * @author		ventury
+ * @version		0.6.1
+ */
 #include <QtWidgets/QApplication>
 #include "NandFlashTestGUI.h"
 

@@ -1,8 +1,18 @@
+/**
+ * @file		AddWidget.cpp
+ * @author		ventury
+ * @version		0.6.1
+ */
 #include <qsqlquery.h>
 #include <qdebug.h>
 #include "AddWidget.h"
 #include "DataBaseProcess.h"
 
+/**
+ * @brief the constructure function.
+ * @param parent this parameter is the parent of this class
+ * @since 0.3.0
+ */
 AddWidget::AddWidget(QWidget* parent)
 	: QWidget(parent)
 {
@@ -24,6 +34,11 @@ AddWidget::AddWidget(QWidget* parent)
 	});
 }
 
+/**
+ * @brief rewrite the close event to re-init the addWidget and hide the widget.
+ * @param ev Qt close event pointer
+ * @since 0.3.0
+ */
 void AddWidget::closeEvent(QCloseEvent* ev)
 {
 	ui.flashTypeEdit->clear();
@@ -34,6 +49,11 @@ void AddWidget::closeEvent(QCloseEvent* ev)
 	this->hide();
 }
 
+/**
+ * @brief get all information that AddWidget contain.
+ * @return a vector that contain *type*, *block count*, *page per block*, *row count*, "colomn count*.
+ * @since 0.4.0
+ */
 QVector<QString> AddWidget::getWidgetInfo()
 {
 	QVector<QString> content;

@@ -1,5 +1,10 @@
-// TODO: SEARCH FLASH TYPE
-// TODO: MAKE THIS WIDGET CHANGE SIZE WITH THE MAIN WINDOW RESIZE
+/**
+ * @file		GeneralMenu.cpp
+ * @author		ventury
+ * @version		0.6.1
+ */
+/**@todo SEARCH FLASH TYPE */
+/**@todo MAKE THIS WIDGET CHANGE SIZE WITH THE MAIN WINDOW RESIZE*/
 #include <qmessagebox.h>
 #include <qsqlquery.h>
 #include <qevent.h>
@@ -9,8 +14,14 @@
 #include "AddWidget.h"
 #include "DataBaseProcess.h"
 
+/**@brief the proportioner of the first colomn in the QTableWidget*/
 #define SIGN_PGE 0.2
 
+/**
+ * @brief the constructure function.
+ * @param parent this parameter is the parent of this class
+ * @since 0.2.0
+ */
 GeneralMenu::GeneralMenu(QWidget *parent)
 	: QWidget(parent), selectRow(0), 
 	flashTable(new FlashTypeTable(this)),
@@ -26,6 +37,10 @@ GeneralMenu::GeneralMenu(QWidget *parent)
 	connect(ui.deleteButton, &QPushButton::clicked, this, &GeneralMenu::DeleteProcess);
 }
 
+/**
+ * @brief initialize the flash Table.
+ * @since 0.4.0
+ */
 void GeneralMenu::FlashTableInit()
 {
 	flashTable->setGeometry(1, 34, 149, 131);
@@ -57,6 +72,10 @@ void GeneralMenu::FlashTableInit()
 					 this, &GeneralMenu::DoubleClickProcess);
 }
 
+/**
+ * @brief the function that happen when double clicked the flash table item.
+ * @since 0.4.0
+ */
 void GeneralMenu::DoubleClickProcess()
 {
 	auto oldItem = flashTable->takeItem(selectRow, 0);
@@ -75,6 +94,10 @@ void GeneralMenu::DoubleClickProcess()
 	DataBaseProcess::CloseDataBase(db);
 }
 
+/**
+ * @brief add a new line in the flash table and fill the specified name.
+ * @since 0.4.0
+ */
 void GeneralMenu::AddNewLine(const QString & name)
 {
 	auto newItem = new QTableWidgetItem(name);
@@ -83,6 +106,10 @@ void GeneralMenu::AddNewLine(const QString & name)
 	flashTable->setItem(row, 1, newItem);
 }
 
+/**
+ * @brief the function that happen when delete button is clicked.
+ * @since 0.4.0
+ */
 void GeneralMenu::DeleteProcess()
 {
 	const int currentRow = flashTable->currentRow();

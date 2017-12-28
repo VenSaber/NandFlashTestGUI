@@ -13,12 +13,14 @@
  * 2017-12-19|0.4.1		 |fixed some bugs & optimizate code
  * 2017-12-20|0.5.0		 |enable move flash viewer & fixed bugs
  * 2017-12-23|0.6.0		 |add viewer reset func & prev/next viewer func
- * 2017-12-24|0.6.1		 |change to doxygen comment style
+ * 2017-12-25|0.6.1		 |change to doxygen comment style
+ * 2017-12-28|0.7.0		 |read test error file to show in the flash viewer
  */
 #pragma once
 #include <qwidget.h>
 #include <qstack.h>
 #include "GeneralMenu.h"
+#include "FlashErrorInfo.h"
 
 /**
  * @struct PaintParam [FlashViewer.h]
@@ -77,6 +79,8 @@ private:
 	void preViewer();
 	/**@brief next flash viewer*/
 	void nxtViewer();
+	/**@brief according to the flashErrorInfo to paint the page square with red color*/
+	void paintFlashError(QPainter& painter);
 private:
 	static Flash currentFlash; /*!> current flash information **static***/
 	GeneralMenu* controller; /*!> the general menu widget class*/
@@ -86,4 +90,8 @@ private:
 	PaintParam paintParam; /*!> the parameter that determine the location of the flash viewer*/
 	QStack<PaintParam> preStack; /*!> the stack contain previous viewer*/
 	QStack<PaintParam> nxtStack; /*!> the stack contain next viewer*/
+	int originX; /*!> the x-coordinate left-top origin point*/
+	int originY; /*!> the y-coordinate left-top origin point*/
+	QVector<FlashErrorInfo> flashErrorVec; /*!> flash error information vector*/
+	bool paintErrorFlag; /*!> the flag whether should paint flash error*/
 };

@@ -11,8 +11,10 @@
 #include <qevent.h>
 #include <qmenu.h>
 #include <qaction.h>
+#include <qmessagebox.h>
 #include <qdebug.h>
 #include "FlashViewer.h"
+#include "NandFlashTestGUI.h"
 
 /**@brief free space in width*/
 const int spacew = 10;
@@ -28,7 +30,8 @@ Flash FlashViewer::currentFlash{"default", 2048, 64, 2, 8};
  * @since 0.1.0
  */
 FlashViewer::FlashViewer(QWidget* parent, GeneralMenu* _controller)
-	:QWidget(parent), controller(_controller), midButtonClick(false)
+	:QWidget(parent), controller(_controller), midButtonClick(false),
+	paintErrorFlag(false)
 {
 	MenuInit();
 	// Watch out! PaintParamRst function must appear firstly and StackInit secondly
@@ -39,6 +42,11 @@ FlashViewer::FlashViewer(QWidget* parent, GeneralMenu* _controller)
 		currentFlash = flash;
 		PaintParamRst();
 		StackInit();
+		this->repaint();
+	});
+	connect((NandFlashTestGUI*)parent, &NandFlashTestGUI::SendFlashErrorInfo, [this](QVector<FlashErrorInfo>& info) {
+		flashErrorVec = info;
+		paintErrorFlag = true;
 		this->repaint();
 	});
 }
@@ -87,6 +95,13 @@ void FlashViewer::paintEvent(QPaintEvent * ev)
 					spaceh * (rowIndex + 1) + subrowCnt * paintParam.sublen * (rowIndex + 1) + paintParam.MoveY);
 			}
 		}
+	if (paintErrorFlag)
+	{
+		// calculate the coordinate of the origin point
+		originX = spacew + paintParam.MoveX;
+		originY = spaceh + paintParam.MoveY;
+		paintFlashError(painter);
+	}
 }
 
 /**
@@ -187,6 +202,8 @@ void FlashViewer::MenuInit()
 void FlashViewer::PaintParamRst()
 {	
 	paintParam = { 0, 0, 0, 0, 2 };
+	flashErrorVec.clear();
+	paintErrorFlag = false;
 }
 
 /**
@@ -251,5 +268,36 @@ void FlashViewer::nxtViewer()
 		paintParam = nxtStack.pop();
 		preStack.push(paintParam);
 		this->repaint();
+	}
+}
+
+/**
+ * @brief according to the flashErrorInfo to paint the page square with red color
+ * @param the Qt painter to draw the red square
+ * @since 0.7.0
+ */
+void FlashViewer::paintFlashError(QPainter& painter)
+{
+	painter.setBrush(Qt::red);
+	for (auto it = flashErrorVec.begin(); it != flashErrorVec.end(); ++it)
+	{
+		if (it->blockNum > currentFlash.blkCnt || it->pageNum > currentFlash.ppb)
+		{
+			QMessageBox* msg = new QMessageBox(QMessageBox::Critical, "Paint Error",
+											   "the error infomation is not suitable for this flash");
+			flashErrorVec.clear();
+			paintErrorFlag = false;
+			this->repaint();
+			msg->exec();
+			return;
+		}
+		int subUnitBlk = currentFlash.blkCnt / currentFlash.colNum / currentFlash.rowNum;
+		int subUnitIndex = (it->blockNum) / subUnitBlk;
+		int subUnitOffset = (it->blockNum) % subUnitBlk;
+		int row = subUnitIndex / currentFlash.colNum;
+		int col = subUnitIndex % currentFlash.colNum;
+		int x = originX + col * spacew + (col * currentFlash.ppb + it->pageNum) * paintParam.sublen;
+		int y = originY + row * spaceh + (row * subUnitBlk + subUnitOffset) * paintParam.sublen;
+		painter.drawRect(x, y, paintParam.sublen, paintParam.sublen);
 	}
 }

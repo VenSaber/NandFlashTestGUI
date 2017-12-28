@@ -5,6 +5,7 @@
  */
 /**@todo SEARCH FLASH TYPE */
 /**@todo MAKE THIS WIDGET CHANGE SIZE WITH THE MAIN WINDOW RESIZE*/
+/**@todo MAKE THE ROW NUMBER AND COLOMN NUMBER BE MODIFIED*/
 #include <qmessagebox.h>
 #include <qsqlquery.h>
 #include <qevent.h>

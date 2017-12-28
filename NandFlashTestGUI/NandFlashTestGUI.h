@@ -14,12 +14,14 @@
  * 2017-12-20|0.5.0		 |enable move flash viewer & fixed bugs
  * 2017-12-23|0.6.0		 |add viewer reset func & prev/next viewer func
  * 2017-12-25|0.6.1		 |change to doxygen comment style
+ * 2017-12-28|0.7.0		 |read test error file to show in the flash viewer
  */
 #pragma once
 #include <QtWidgets/QMainWindow>
 #include <qtextedit.h>
 #include "FlashViewer.h"
 #include "GeneralMenu.h"
+#include "FlashErrorInfo.h"
 #include "ui_NandFlashTestGUI.h"
 
 /**
@@ -32,10 +34,13 @@ class NandFlashTestGUI : public QMainWindow
 {
 	Q_OBJECT
 public:
-	/** @brief the constructure function.*/
+	/**@brief the constructure function.*/
 	NandFlashTestGUI(QWidget *parent = Q_NULLPTR);
-	/** @brief the default destructure function.*/
+	/**@brief the default destructure function.*/
 	~NandFlashTestGUI() = default;
+signals:
+	/**@brief sent the error information to the flash viewer*/
+	void SendFlashErrorInfo(QVector<FlashErrorInfo>& flashErrorVec);
 protected:
 	/**@brief draw a red line to draw a border line. */
 	void paintEvent(QPaintEvent* ev) override;
@@ -46,6 +51,10 @@ protected:
 private:
 	/**@brief setting the file menu. */
 	void FileMenuInit();
+	/**@brief save the flash read write error information from the string file*/
+	void SaveStringErrorInfo(const QString& filename);
+	/**@brief save the flash read write error information from the digital file*/
+	void SaveDigitalErrorInfo(const QString& filename);
 private:
 	// Containers
 	Ui::NandFlashTestGUIClass ui; /*!> main window GUI description class */

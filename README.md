@@ -24,3 +24,4 @@
 2017-12-20|0.5.0	 |enable move flash viewer and fixed bugs
 2017-12-23|0.6.0	 |add viewer reset func & prev/next viewer func
 2017-12-25|0.6.1	 |change to doxygen comment style
+2017-12-28|0.7.0	 |read test error file to show in the flash viewer

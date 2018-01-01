@@ -27,11 +27,12 @@ Flash FlashViewer::currentFlash{"default", 2048, 64, 2, 8};
  * @brief the constructure function
  * @param parent the parent of this class
  * @param _controller the general Menu class that use to communicate with
+ * @param _infoEdit the text editor of the main window
  * @since 0.1.0
  */
-FlashViewer::FlashViewer(QWidget* parent, GeneralMenu* _controller)
-	:QWidget(parent), controller(_controller), midButtonClick(false),
-	paintErrorFlag(false)
+FlashViewer::FlashViewer(QWidget* parent, GeneralMenu* _controller, QTextEdit* _infoEdit)
+	:QWidget(parent), controller(_controller), infoEdit(_infoEdit),
+	midButtonClick(false), paintErrorFlag(false)
 {
 	MenuInit();
 	// Watch out! PaintParamRst function must appear firstly and StackInit secondly
@@ -178,6 +179,49 @@ void FlashViewer::mouseReleaseEvent(QMouseEvent * ev)
 }
 
 /**
+ * @brief send the flash info by double click the square in the flash viewer
+ * @param Qt mouse event pointer
+ * @since 0.8.0
+ */
+void FlashViewer::mouseDoubleClickEvent(QMouseEvent * ev)
+{
+	// this event is triggered only when double clicked the red square
+	if (paintErrorFlag)
+	{
+		int width = ev->pos().x() - originX;
+		int height = ev->pos().y() - originY;
+		int subUnitWidth = paintParam.sublen * currentFlash.ppb;
+		int subUnitHeight = paintParam.sublen * currentFlash.blkCnt / currentFlash.colNum / currentFlash.rowNum;
+		int unitOffsetX = width % (subUnitWidth + spacew);
+		int unitOffsetY = height % (subUnitHeight + spaceh);
+		if (unitOffsetX > subUnitWidth || unitOffsetY > subUnitHeight) 
+			return;
+		int subUnitNumX = width / (subUnitWidth + spacew) + 1;
+		int subUnitNumY = height / (subUnitHeight + spaceh) + 1;
+		if (subUnitNumX <= 0 || subUnitNumX > currentFlash.colNum ||
+			subUnitNumY <= 0 || subUnitNumY > currentFlash.rowNum)
+			return;
+		int pageOffset = unitOffsetX / paintParam.sublen + 1;
+		int blockOffset = ((subUnitNumY - 1) * currentFlash.colNum + subUnitNumX - 1)
+			* subUnitHeight / paintParam.sublen + unitOffsetY / paintParam.sublen + 1;
+
+		QVector<FlashErrorInfo> flasherror;
+		/**@todo: to find a better algorithm to determine whether the red square is*/
+		for (auto it = flashErrorVec.begin(); it < flashErrorVec.end(); ++it)
+		{
+			if (pageOffset == it->pageNum && blockOffset == it->blockNum)
+				flasherror.push_back(*it);
+		}
+
+		if (!flasherror.isEmpty())
+		{
+			infoEdit->clear();
+			emit doublePageClick(flasherror);
+		}
+	}
+}
+
+/**
  * @brief init the menu that right button triggered
  * @since 0.6.0
  */
@@ -296,8 +340,8 @@ void FlashViewer::paintFlashError(QPainter& painter)
 		int subUnitOffset = (it->blockNum) % subUnitBlk;
 		int row = subUnitIndex / currentFlash.colNum;
 		int col = subUnitIndex % currentFlash.colNum;
-		int x = originX + col * spacew + (col * currentFlash.ppb + it->pageNum) * paintParam.sublen;
-		int y = originY + row * spaceh + (row * subUnitBlk + subUnitOffset) * paintParam.sublen;
+		int x = originX + col * spacew + (col * currentFlash.ppb + it->pageNum - 1) * paintParam.sublen;
+		int y = originY + row * spaceh + (row * subUnitBlk + subUnitOffset - 1) * paintParam.sublen;
 		painter.drawRect(x, y, paintParam.sublen, paintParam.sublen);
 	}
 }

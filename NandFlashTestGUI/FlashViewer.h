@@ -2,6 +2,9 @@
  * @file		FlashViewer.h
  * @author		ventury
  * @version		0.6.1
+ * @details		block count and page count should begin with 1
+ *				block number first from left to right
+ *				then from top to buttom
  * @note
  * **History**  
  *    data   |  version	 |             content
@@ -15,10 +18,12 @@
  * 2017-12-23|0.6.0		 |add viewer reset func & prev/next viewer func
  * 2017-12-25|0.6.1		 |change to doxygen comment style
  * 2017-12-28|0.7.0		 |read test error file to show in the flash viewer
+ * 2018-01-01|0.8.0		 |the text edit will input detail when double clicked the error page
  */
 #pragma once
 #include <qwidget.h>
 #include <qstack.h>
+#include <qtextedit.h>
 #include "GeneralMenu.h"
 #include "FlashErrorInfo.h"
 
@@ -48,11 +53,14 @@ class FlashViewer : public QWidget
 	Q_OBJECT
 public:
 	/**@brief the constructure function*/
-	FlashViewer(QWidget* parent = Q_NULLPTR, GeneralMenu* _controller = nullptr);
+	FlashViewer(QWidget* parent = Q_NULLPTR, GeneralMenu* _controller = nullptr, QTextEdit* _infoEdit = nullptr);
 	/**@brief the default destructure function.*/
 	~FlashViewer() = default;
 	/**@brief previous/next viewer function that keyboard trigger*/
 	void keyPressEvent(QKeyEvent* ev) override;
+signals:
+	/**@brief sent to infoEdit when double clicked the page square*/
+	void doublePageClick(QVector<FlashErrorInfo> flasherror);
 protected: // event virtual function
 	/**@brief paint the flash viewer (basic unit : page)*/
 	void paintEvent(QPaintEvent* ev) override;
@@ -64,6 +72,7 @@ protected: // event virtual function
 	void mousePressEvent(QMouseEvent* ev) override;
 	/**@brief the end point that the viewer move*/
 	void mouseReleaseEvent(QMouseEvent* ev) override;
+	void mouseDoubleClickEvent(QMouseEvent* ev) override;
 private:
 	/**@brief init the menu that right button triggered*/
 	void MenuInit();
@@ -84,6 +93,7 @@ private:
 private:
 	static Flash currentFlash; /*!> current flash information **static***/
 	GeneralMenu* controller; /*!> the general menu widget class*/
+	QTextEdit* infoEdit;
 	QMenu* rbtMenu = nullptr; /*!> the menu class that right button trigger*/
 	QAction* resetAction = nullptr; /*!> reset action in the right button menu*/
 	bool midButtonClick; /*!> Mouse Moving Flag*/

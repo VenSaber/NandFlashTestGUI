@@ -15,6 +15,7 @@
  * 2017-12-23|0.6.0		 |add viewer reset func & prev/next viewer func
  * 2017-12-25|0.6.1		 |change to doxygen comment style
  * 2017-12-28|0.7.0		 |read test error file to show in the flash viewer
+ * 2018-01-01|0.8.0		 |the text edit will input detail when double clicked the error page
  */
 #pragma once
 #include <QtWidgets/QMainWindow>
@@ -59,8 +60,8 @@ private:
 	// Containers
 	Ui::NandFlashTestGUIClass ui; /*!> main window GUI description class */
 	GeneralMenu* genWindow = nullptr;/*!> general controller sub-window */
-	FlashViewer* viewer = nullptr; /*!> flash page unit viewer sub-window */
 	QTextEdit* infoEdit = nullptr; /*!> error information inputing sub-window */
+	FlashViewer* viewer = nullptr; /*!> flash page unit viewer sub-window */
 	QMenu* menuOpen = nullptr; /*!> open menu as the child menu of the File menu */
 	QAction* actionErrorString = nullptr;/*!> open error string file action in the open menu */
 	QAction* actionPureDigital = nullptr;/*!> open pure digital file action in the open menu */

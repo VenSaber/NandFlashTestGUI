@@ -4,7 +4,7 @@
  * @version		0.6.1
  */
 /**
- * @todo USE THE FLASHERRORVEC TO PAINT THE FLASH VIEWER
+ * @todo ENABLE CHANGE THE INFOEDIT SCOLL
  */
 #include <qevent.h>
 #include <qpainter.h>
@@ -36,7 +36,8 @@ const double vHeightFac = 0.81;
  */
 NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	: QMainWindow(parent), genWindow(new GeneralMenu(this)),
-	viewer(new FlashViewer(this, genWindow)), infoEdit(new QTextEdit(this)) 
+	infoEdit(new QTextEdit(this)),
+	viewer(new FlashViewer(this, genWindow, infoEdit))
 {
 	ui.setupUi(this);
 	this->size().setWidth(STD_WIDTH);
@@ -67,6 +68,22 @@ NandFlashTestGUI::NandFlashTestGUI(QWidget *parent)
 	infoEdit->setReadOnly(true);
 	infoEdit->show();
 
+	connect(viewer, &FlashViewer::doublePageClick, [this](QVector<FlashErrorInfo> flasherror) {
+		QString allerror;
+		for (auto it = flasherror.begin(); it != flasherror.end(); ++it)
+		{
+			QString blockNum, pageNum, byteNum;
+			blockNum.setNum(it->blockNum);
+			pageNum.setNum(it->pageNum);
+			byteNum.setNum(it->byteNum);
+			QString errorStr = "Block No." + blockNum + ", Page No." + pageNum
+				+ ", Byte No." + byteNum + "\nthe correct data is 0x" + it->correctData.toHex()
+				+ "\nthe error data is 0x" + it->errorData.toHex()
+				+ "\nthe xor data is 0x" + it->xorData.toHex() + "\n";
+			allerror += errorStr;
+		}
+		infoEdit->setText(allerror);
+	});
 }
 
 /**
